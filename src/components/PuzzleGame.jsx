@@ -9,6 +9,10 @@ const puzzles = [
   { folder: 'puzzle5', letter: 'R', pieces: 36 },
 ];
 
+const isTouchDevice = () => {
+  return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+};
+
 const PuzzleGame = () => {
   const [started, setStarted] = useState(false);
   const [startTime, setStartTime] = useState(null);
@@ -19,7 +23,7 @@ const PuzzleGame = () => {
   const [showLetter, setShowLetter] = useState(false);
   const [gameOver, setGameOver] = useState(false);
   const [collectedLetters, setCollectedLetters] = useState([]);
-  const [selectedIndex, setSelectedIndex] = useState(null); // for mobile touch
+  const [selectedIndex, setSelectedIndex] = useState(null);
 
   const gridSize = Math.sqrt(puzzles[currentPuzzle].pieces);
 
@@ -59,7 +63,7 @@ const PuzzleGame = () => {
     checkCompletion(updated);
   };
 
-  const handleTouch = (index) => {
+  const handleTap = (index) => {
     if (selectedIndex === null) {
       setSelectedIndex(index);
     } else {
@@ -90,6 +94,8 @@ const PuzzleGame = () => {
     }
   };
 
+  const isTouch = isTouchDevice();
+
   return (
     <div className="puzzle-container">
       <h1>Jigsaw Puzzle</h1>
@@ -112,14 +118,19 @@ const PuzzleGame = () => {
               <div
                 key={index}
                 className={`piece ${selectedIndex === index ? 'selected' : ''}`}
-                draggable
-                onDragStart={(e) => e.dataTransfer.setData('index', index)}
-                onDragOver={(e) => e.preventDefault()}
-                onDrop={(e) => {
-                  const from = parseInt(e.dataTransfer.getData('index'));
-                  handleDrop(from, index);
-                }}
-                onTouchStart={() => handleTouch(index)}
+                {...(!isTouch
+                  ? {
+                      draggable: true,
+                      onDragStart: (e) => e.dataTransfer.setData('index', index),
+                      onDragOver: (e) => e.preventDefault(),
+                      onDrop: (e) => {
+                        const from = parseInt(e.dataTransfer.getData('index'));
+                        handleDrop(from, index);
+                      },
+                    }
+                  : {
+                      onClick: () => handleTap(index),
+                    })}
               >
                 <img
                   src={`/images/${puzzles[currentPuzzle].folder}/${src}`}
