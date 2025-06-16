@@ -1,0 +1,91 @@
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.main-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  text-align: center;
+  background-color: #fff;
+}
+
+h1 {
+  font-size: 48px;
+  margin-bottom: 20px;
+}
+
+.timer {
+  font-size: 20px;
+  margin-bottom: 20px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 100px); /* 3x3 puzzle */
+  grid-auto-rows: 100px;
+  grid-auto-flow: row;
+  gap: 0; /* 🔥 REMOVE GAPS COMPLETELY */
+  justify-content: center;
+  margin-bottom: 20px;
+  padding: 0;
+}
+
+.grid img {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  display: block; /* 🔥 Ensure no extra spacing from inline elements */
+  border-radius: 0;
+  box-shadow: none;
+  cursor: grab;
+  margin: 0;
+  padding: 0;
+}
+
+.start-button,
+.next-button {
+  background-color: #2196f3;
+  color: white;
+  border: none;
+  padding: 10px 25px;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.start-button:hover,
+.next-button:hover {
+  background-color: #1976d2;
+}
+
+.success {
+  font-size: 20px;
+  color: green;
+  margin-top: 10px;
+}
+
+.final-message {
+  font-size: 22px;
+  margin-top: 20px;
+  color: purple;
+}
+
+.puzzle-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;       /* center contents horizontally */
+  justify-content: center;   /* center contents vertically */
+  height: 100vh;             /* full viewport height */
+  width: 100vw;              /* full viewport width */
+  margin: 0;
+  padding: 0;
+  text-align: center;
+  box-sizing: border-box;
+}

@@ -1,0 +1,47 @@
+/* src/components/Home.css */
+
+.home-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: linear-gradient(120deg, #f6f6f6, #e0d4ff);
+  padding: 20px;
+  text-align: center;
+}
+
+.home-title {
+  font-size: 3rem;
+  font-weight: bold;
+  color: #4b0082;
+  margin-bottom: 1rem;
+}
+
+.home-description {
+  font-size: 1.2rem;
+  color: #333;
+  max-width: 600px;
+  margin-bottom: 2rem;
+}
+
+.home-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.home-button {
+  background-color: #4b0082;
+  color: white;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.home-button:hover {
+  background-color: #6a0dad;
+}
