@@ -19,6 +19,7 @@ const PuzzleGame = () => {
   const [showLetter, setShowLetter] = useState(false);
   const [gameOver, setGameOver] = useState(false);
   const [collectedLetters, setCollectedLetters] = useState([]);
+  const [selectedIndex, setSelectedIndex] = useState(null); // for mobile touch
 
   const gridSize = Math.sqrt(puzzles[currentPuzzle].pieces);
 
@@ -43,6 +44,7 @@ const PuzzleGame = () => {
     setPieces(shuffled);
     setCompleted(false);
     setShowLetter(false);
+    setSelectedIndex(null);
   };
 
   const startGame = () => {
@@ -57,13 +59,18 @@ const PuzzleGame = () => {
     checkCompletion(updated);
   };
 
+  const handleTouch = (index) => {
+    if (selectedIndex === null) {
+      setSelectedIndex(index);
+    } else {
+      handleDrop(selectedIndex, index);
+      setSelectedIndex(null);
+    }
+  };
+
   const checkCompletion = (arr) => {
     const expected = Array.from({ length: arr.length }, (_, i) => `${i + 1}.png`);
     const isCorrect = expected.every((val, idx) => arr[idx] === val);
-
-    console.log("Current Order:", arr);
-    console.log("Expected Order:", expected);
-    console.log("Puzzle correct?", isCorrect);
 
     if (isCorrect && !completed) {
       setCollectedLetters([...collectedLetters, puzzles[currentPuzzle].letter]);
@@ -104,7 +111,7 @@ const PuzzleGame = () => {
             {pieces.map((src, index) => (
               <div
                 key={index}
-                className="piece"
+                className={`piece ${selectedIndex === index ? 'selected' : ''}`}
                 draggable
                 onDragStart={(e) => e.dataTransfer.setData('index', index)}
                 onDragOver={(e) => e.preventDefault()}
@@ -112,6 +119,7 @@ const PuzzleGame = () => {
                   const from = parseInt(e.dataTransfer.getData('index'));
                   handleDrop(from, index);
                 }}
+                onTouchStart={() => handleTouch(index)}
               >
                 <img
                   src={`/images/${puzzles[currentPuzzle].folder}/${src}`}
