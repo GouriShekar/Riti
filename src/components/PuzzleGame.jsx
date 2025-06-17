@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import './PuzzleGame.css';
 
 const puzzles = [
@@ -24,11 +24,9 @@ const PuzzleGame = () => {
   const [gameOver, setGameOver] = useState(false);
   const [collectedLetters, setCollectedLetters] = useState([]);
   const [selectedIndex, setSelectedIndex] = useState(null);
-  const [draggedIndex, setDraggedIndex] = useState(null);
 
   const gridSize = Math.sqrt(puzzles[currentPuzzle].pieces);
   const isTouch = isTouchDevice();
-  const touchTargetRef = useRef(null);
 
   useEffect(() => {
     if (started && !gameOver) {
@@ -52,7 +50,6 @@ const PuzzleGame = () => {
     setCompleted(false);
     setShowLetter(false);
     setSelectedIndex(null);
-    setDraggedIndex(null);
   };
 
   const startGame = () => {
@@ -84,25 +81,13 @@ const PuzzleGame = () => {
     }
   };
 
-  const handleTouchStart = (index) => {
-    setDraggedIndex(index);
-  };
-
-  const handleTouchMove = (e) => {
-    const touch = e.touches[0];
-    const target = document.elementFromPoint(touch.clientX, touch.clientY);
-    if (target?.closest('.piece')) {
-      const toIndex = Number(target.closest('.piece').dataset.index);
-      touchTargetRef.current = toIndex;
+  const handleTouchSwap = (index) => {
+    if (selectedIndex === null) {
+      setSelectedIndex(index);
+    } else {
+      handleDrop(selectedIndex, index);
+      setSelectedIndex(null);
     }
-  };
-
-  const handleTouchEnd = () => {
-    if (draggedIndex !== null && touchTargetRef.current !== null) {
-      handleDrop(draggedIndex, touchTargetRef.current);
-    }
-    setDraggedIndex(null);
-    touchTargetRef.current = null;
   };
 
   const handleNext = () => {
@@ -126,7 +111,7 @@ const PuzzleGame = () => {
           <p>Timer: {elapsedTime}s</p>
           {isTouch && (
             <p style={{ fontSize: '14px', color: '#555' }}>
-              Touch a piece and drag your finger over another piece to swap.
+              Tap one piece, then tap another to swap them.
             </p>
           )}
           <div className="grid-wrapper">
@@ -140,7 +125,6 @@ const PuzzleGame = () => {
               {pieces.map((src, index) => (
                 <div
                   key={index}
-                  data-index={index}
                   className={`piece ${selectedIndex === index ? 'selected' : ''}`}
                   {...(!isTouch
                     ? {
@@ -153,9 +137,7 @@ const PuzzleGame = () => {
                         },
                       }
                     : {
-                        onTouchStart: () => handleTouchStart(index),
-                        onTouchMove: handleTouchMove,
-                        onTouchEnd: handleTouchEnd,
+                        onClick: () => handleTouchSwap(index),
                       })}
                 >
                   <img
