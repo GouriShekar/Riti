@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import './PuzzleGame.css';
 
 const puzzles = [
@@ -23,7 +23,6 @@ const PuzzleGame = () => {
   const [showLetter, setShowLetter] = useState(false);
   const [gameOver, setGameOver] = useState(false);
   const [collectedLetters, setCollectedLetters] = useState([]);
-  const [selectedIndex, setSelectedIndex] = useState(null);
   const [draggedIndex, setDraggedIndex] = useState(null);
 
   const gridSize = Math.sqrt(puzzles[currentPuzzle].pieces);
@@ -50,7 +49,6 @@ const PuzzleGame = () => {
     setPieces(shuffled);
     setCompleted(false);
     setShowLetter(false);
-    setSelectedIndex(null);
     setDraggedIndex(null);
   };
 
@@ -66,15 +64,15 @@ const PuzzleGame = () => {
     checkCompletion(updated);
   };
 
-  const handleTouchStart = (index) => {
-    setDraggedIndex(index);
-  };
-
   const handleTouchEnd = (index) => {
-    if (draggedIndex !== null && draggedIndex !== index) {
-      handleDrop(draggedIndex, index);
+    if (draggedIndex === null) {
+      setDraggedIndex(index); // First tap
+    } else if (draggedIndex !== index) {
+      handleDrop(draggedIndex, index); // Second tap
+      setDraggedIndex(null);
+    } else {
+      setDraggedIndex(null); // Tapped same piece again
     }
-    setDraggedIndex(null);
   };
 
   const checkCompletion = (arr) => {
@@ -112,7 +110,7 @@ const PuzzleGame = () => {
           <p>Timer: {elapsedTime}s</p>
           {isTouch && (
             <p style={{ fontSize: '14px', color: '#555' }}>
-              Touch and hold a piece, then release on another to swap.
+              Tap one piece, then tap another to swap them.
             </p>
           )}
           <div className="grid-wrapper">
@@ -126,7 +124,7 @@ const PuzzleGame = () => {
               {pieces.map((src, index) => (
                 <div
                   key={index}
-                  className={`piece ${selectedIndex === index ? 'selected' : ''}`}
+                  className="piece"
                   {...(!isTouch
                     ? {
                         draggable: true,
@@ -138,7 +136,6 @@ const PuzzleGame = () => {
                         },
                       }
                     : {
-                        onTouchStart: () => handleTouchStart(index),
                         onTouchEnd: () => handleTouchEnd(index),
                       })}
                 >
