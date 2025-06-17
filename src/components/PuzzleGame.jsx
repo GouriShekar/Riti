@@ -28,6 +28,7 @@ const PuzzleGame = () => {
 
   const gridSize = Math.sqrt(puzzles[currentPuzzle].pieces);
   const isTouch = isTouchDevice();
+  const touchTargetRef = useRef(null);
 
   useEffect(() => {
     if (started && !gameOver) {
@@ -60,21 +61,11 @@ const PuzzleGame = () => {
   };
 
   const handleDrop = (fromIndex, toIndex) => {
+    if (fromIndex === toIndex) return;
     const updated = [...pieces];
     [updated[fromIndex], updated[toIndex]] = [updated[toIndex], updated[fromIndex]];
     setPieces(updated);
     checkCompletion(updated);
-  };
-
-  const handleTouchStart = (index) => {
-    setDraggedIndex(index);
-  };
-
-  const handleTouchEnd = (index) => {
-    if (draggedIndex !== null && draggedIndex !== index) {
-      handleDrop(draggedIndex, index);
-    }
-    setDraggedIndex(null);
   };
 
   const checkCompletion = (arr) => {
@@ -82,13 +73,36 @@ const PuzzleGame = () => {
     const isCorrect = expected.every((val, idx) => arr[idx] === val);
 
     if (isCorrect && !completed) {
-      setCollectedLetters([...collectedLetters, puzzles[currentPuzzle].letter]);
+      if (!collectedLetters.includes(puzzles[currentPuzzle].letter)) {
+        setCollectedLetters([...collectedLetters, puzzles[currentPuzzle].letter]);
+      }
       setCompleted(true);
       setShowLetter(true);
     } else {
       setCompleted(false);
       setShowLetter(false);
     }
+  };
+
+  const handleTouchStart = (index) => {
+    setDraggedIndex(index);
+  };
+
+  const handleTouchMove = (e) => {
+    const touch = e.touches[0];
+    const target = document.elementFromPoint(touch.clientX, touch.clientY);
+    if (target?.closest('.piece')) {
+      const toIndex = Number(target.closest('.piece').dataset.index);
+      touchTargetRef.current = toIndex;
+    }
+  };
+
+  const handleTouchEnd = () => {
+    if (draggedIndex !== null && touchTargetRef.current !== null) {
+      handleDrop(draggedIndex, touchTargetRef.current);
+    }
+    setDraggedIndex(null);
+    touchTargetRef.current = null;
   };
 
   const handleNext = () => {
@@ -112,7 +126,7 @@ const PuzzleGame = () => {
           <p>Timer: {elapsedTime}s</p>
           {isTouch && (
             <p style={{ fontSize: '14px', color: '#555' }}>
-              Touch and hold a piece, then release on another to swap.
+              Touch a piece and drag your finger over another piece to swap.
             </p>
           )}
           <div className="grid-wrapper">
@@ -126,6 +140,7 @@ const PuzzleGame = () => {
               {pieces.map((src, index) => (
                 <div
                   key={index}
+                  data-index={index}
                   className={`piece ${selectedIndex === index ? 'selected' : ''}`}
                   {...(!isTouch
                     ? {
@@ -139,7 +154,8 @@ const PuzzleGame = () => {
                       }
                     : {
                         onTouchStart: () => handleTouchStart(index),
-                        onTouchEnd: () => handleTouchEnd(index),
+                        onTouchMove: handleTouchMove,
+                        onTouchEnd: handleTouchEnd,
                       })}
                 >
                   <img
