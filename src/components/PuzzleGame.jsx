@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './PuzzleGame.css';
 
 const puzzles = [
@@ -9,7 +9,9 @@ const puzzles = [
   { folder: 'puzzle5', letter: 'R', pieces: 36 },
 ];
 
-const isTouchDevice = () => 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+const isTouchDevice = () => {
+  return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+};
 
 const PuzzleGame = () => {
   const [started, setStarted] = useState(false);
@@ -21,6 +23,7 @@ const PuzzleGame = () => {
   const [showLetter, setShowLetter] = useState(false);
   const [gameOver, setGameOver] = useState(false);
   const [collectedLetters, setCollectedLetters] = useState([]);
+  const [selectedIndex, setSelectedIndex] = useState(null);
   const [draggedIndex, setDraggedIndex] = useState(null);
 
   const gridSize = Math.sqrt(puzzles[currentPuzzle].pieces);
@@ -47,6 +50,7 @@ const PuzzleGame = () => {
     setPieces(shuffled);
     setCompleted(false);
     setShowLetter(false);
+    setSelectedIndex(null);
     setDraggedIndex(null);
   };
 
@@ -105,10 +109,10 @@ const PuzzleGame = () => {
 
       {started && !gameOver && (
         <>
-          <p className="timer">Timer: {elapsedTime}s</p>
+          <p>Timer: {elapsedTime}s</p>
           {isTouch && (
             <p style={{ fontSize: '14px', color: '#555' }}>
-              Tap one piece, then tap another to swap.
+              Touch and hold a piece, then release on another to swap.
             </p>
           )}
           <div className="grid-wrapper">
@@ -122,7 +126,7 @@ const PuzzleGame = () => {
               {pieces.map((src, index) => (
                 <div
                   key={index}
-                  className="piece"
+                  className={`piece ${selectedIndex === index ? 'selected' : ''}`}
                   {...(!isTouch
                     ? {
                         draggable: true,
