@@ -9,9 +9,7 @@ const puzzles = [
   { folder: 'puzzle5', letter: 'R', pieces: 36 },
 ];
 
-const isTouchDevice = () => {
-  return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-};
+const isTouchDevice = () => 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 
 const PuzzleGame = () => {
   const [started, setStarted] = useState(false);
@@ -64,15 +62,15 @@ const PuzzleGame = () => {
     checkCompletion(updated);
   };
 
+  const handleTouchStart = (index) => {
+    setDraggedIndex(index);
+  };
+
   const handleTouchEnd = (index) => {
-    if (draggedIndex === null) {
-      setDraggedIndex(index); // First tap
-    } else if (draggedIndex !== index) {
-      handleDrop(draggedIndex, index); // Second tap
-      setDraggedIndex(null);
-    } else {
-      setDraggedIndex(null); // Tapped same piece again
+    if (draggedIndex !== null && draggedIndex !== index) {
+      handleDrop(draggedIndex, index);
     }
+    setDraggedIndex(null);
   };
 
   const checkCompletion = (arr) => {
@@ -107,10 +105,10 @@ const PuzzleGame = () => {
 
       {started && !gameOver && (
         <>
-          <p>Timer: {elapsedTime}s</p>
+          <p className="timer">Timer: {elapsedTime}s</p>
           {isTouch && (
             <p style={{ fontSize: '14px', color: '#555' }}>
-              Tap one piece, then tap another to swap them.
+              Tap one piece, then tap another to swap.
             </p>
           )}
           <div className="grid-wrapper">
@@ -136,6 +134,7 @@ const PuzzleGame = () => {
                         },
                       }
                     : {
+                        onTouchStart: () => handleTouchStart(index),
                         onTouchEnd: () => handleTouchEnd(index),
                       })}
                 >
