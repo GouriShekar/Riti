@@ -25,27 +25,34 @@ h1 {
   margin-bottom: 20px;
 }
 
+.grid-wrapper {
+  max-width: 100vw;
+  max-height: 80vh;
+  overflow: auto;
+}
+
 .grid {
   display: grid;
-  grid-template-columns: repeat(3, 100px); /* 3x3 puzzle */
-  grid-auto-rows: 100px;
-  grid-auto-flow: row;
-  gap: 0; /* 🔥 REMOVE GAPS COMPLETELY */
+  gap: 0; /* No spacing between puzzle pieces */
   justify-content: center;
-  margin-bottom: 20px;
-  padding: 0;
+  align-items: center;
 }
 
 .grid img {
-  width: 100px;
-  height: 100px;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
-  display: block; /* 🔥 Ensure no extra spacing from inline elements */
+  display: block;
+  margin: 0;
+  padding: 0;
   border-radius: 0;
   box-shadow: none;
   cursor: grab;
-  margin: 0;
-  padding: 0;
+}
+
+.piece {
+  width: 100%;
+  height: 100%;
 }
 
 .start-button,
@@ -80,10 +87,10 @@ h1 {
 .puzzle-container {
   display: flex;
   flex-direction: column;
-  align-items: center;       /* center contents horizontally */
-  justify-content: center;   /* center contents vertically */
-  height: 100vh;             /* full viewport height */
-  width: 100vw;              /* full viewport width */
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  width: 100vw;
   margin: 0;
   padding: 0;
   text-align: center;

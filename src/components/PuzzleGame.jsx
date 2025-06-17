@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './PuzzleGame.css';
 
 const puzzles = [
@@ -24,8 +24,10 @@ const PuzzleGame = () => {
   const [gameOver, setGameOver] = useState(false);
   const [collectedLetters, setCollectedLetters] = useState([]);
   const [selectedIndex, setSelectedIndex] = useState(null);
+  const [draggedIndex, setDraggedIndex] = useState(null);
 
   const gridSize = Math.sqrt(puzzles[currentPuzzle].pieces);
+  const isTouch = isTouchDevice();
 
   useEffect(() => {
     if (started && !gameOver) {
@@ -49,6 +51,7 @@ const PuzzleGame = () => {
     setCompleted(false);
     setShowLetter(false);
     setSelectedIndex(null);
+    setDraggedIndex(null);
   };
 
   const startGame = () => {
@@ -63,13 +66,15 @@ const PuzzleGame = () => {
     checkCompletion(updated);
   };
 
-  const handleTap = (index) => {
-    if (selectedIndex === null) {
-      setSelectedIndex(index);
-    } else {
-      handleDrop(selectedIndex, index);
-      setSelectedIndex(null);
+  const handleTouchStart = (index) => {
+    setDraggedIndex(index);
+  };
+
+  const handleTouchEnd = (index) => {
+    if (draggedIndex !== null && draggedIndex !== index) {
+      handleDrop(draggedIndex, index);
     }
+    setDraggedIndex(null);
   };
 
   const checkCompletion = (arr) => {
@@ -94,8 +99,6 @@ const PuzzleGame = () => {
     }
   };
 
-  const isTouch = isTouchDevice();
-
   return (
     <div className="puzzle-container">
       <h1>Jigsaw Puzzle</h1>
@@ -107,39 +110,48 @@ const PuzzleGame = () => {
       {started && !gameOver && (
         <>
           <p>Timer: {elapsedTime}s</p>
-          <div
-            className="grid"
-            style={{
-              gridTemplateColumns: `repeat(${gridSize}, 100px)`,
-              gridTemplateRows: `repeat(${gridSize}, 100px)`,
-            }}
-          >
-            {pieces.map((src, index) => (
-              <div
-                key={index}
-                className={`piece ${selectedIndex === index ? 'selected' : ''}`}
-                {...(!isTouch
-                  ? {
-                      draggable: true,
-                      onDragStart: (e) => e.dataTransfer.setData('index', index),
-                      onDragOver: (e) => e.preventDefault(),
-                      onDrop: (e) => {
-                        const from = parseInt(e.dataTransfer.getData('index'));
-                        handleDrop(from, index);
-                      },
-                    }
-                  : {
-                      onClick: () => handleTap(index),
-                    })}
-              >
-                <img
-                  src={`/images/${puzzles[currentPuzzle].folder}/${src}`}
-                  alt=""
-                  draggable={false}
-                />
-              </div>
-            ))}
+          {isTouch && (
+            <p style={{ fontSize: '14px', color: '#555' }}>
+              Touch and hold a piece, then release on another to swap.
+            </p>
+          )}
+          <div className="grid-wrapper">
+            <div
+              className="grid"
+              style={{
+                gridTemplateColumns: `repeat(${gridSize}, min(80px, 15vw))`,
+                gridTemplateRows: `repeat(${gridSize}, min(80px, 15vw))`,
+              }}
+            >
+              {pieces.map((src, index) => (
+                <div
+                  key={index}
+                  className={`piece ${selectedIndex === index ? 'selected' : ''}`}
+                  {...(!isTouch
+                    ? {
+                        draggable: true,
+                        onDragStart: (e) => e.dataTransfer.setData('index', index),
+                        onDragOver: (e) => e.preventDefault(),
+                        onDrop: (e) => {
+                          const from = parseInt(e.dataTransfer.getData('index'));
+                          handleDrop(from, index);
+                        },
+                      }
+                    : {
+                        onTouchStart: () => handleTouchStart(index),
+                        onTouchEnd: () => handleTouchEnd(index),
+                      })}
+                >
+                  <img
+                    src={`/images/${puzzles[currentPuzzle].folder}/${src}`}
+                    alt=""
+                    draggable={false}
+                  />
+                </div>
+              ))}
+            </div>
           </div>
+
           {showLetter && (
             <div className="letter-message">
               ✅ Puzzle Complete! Letter: <strong>{puzzles[currentPuzzle].letter}</strong>
