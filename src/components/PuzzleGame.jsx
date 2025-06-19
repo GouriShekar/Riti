@@ -141,10 +141,13 @@ const PuzzleGame = () => {
                       })}
                 >
                   <img
-                    src={`/images/${puzzles[currentPuzzle].folder}/${src}`}
-                    alt=""
-                    draggable={false}
-                  />
+  src={`/images/${puzzles[currentPuzzle].folder}/${src}`}
+  alt=""
+  draggable={false}
+  className={selectedIndex === index ? 'selected' : ''}
+/>
+
+                 
                 </div>
               ))}
             </div>
