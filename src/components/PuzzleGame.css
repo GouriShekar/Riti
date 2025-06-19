@@ -96,3 +96,8 @@ h1 {
   text-align: center;
   box-sizing: border-box;
 }
+
+.piece.selected {
+  outline: 3px solid red;
+  box-sizing: border-box;
+}
