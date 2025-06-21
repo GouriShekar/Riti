@@ -97,7 +97,3 @@ h1 {
   box-sizing: border-box;
 }
 
-.piece.selected {
-  outline: 2px solid red;
-  box-sizing: border-box;
-}
