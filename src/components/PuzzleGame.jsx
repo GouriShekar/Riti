@@ -3,10 +3,10 @@ import './PuzzleGame.css';
 
 const puzzles = [
   { folder: 'puzzle1', letter: 'S', pieces: 16 },
-  { folder: 'puzzle2', letter: 'A', pieces: 16 },
-  { folder: 'puzzle3', letter: 'T', pieces: 16 },
-  { folder: 'puzzle4', letter: 'Y', pieces: 25 },
-  { folder: 'puzzle5', letter: 'R', pieces: 36 },
+  { folder: 'puzzle2', letter: 'N', pieces: 16 },
+  { folder: 'puzzle3', letter: 'A', pieces: 16 },
+  { folder: 'puzzle4', letter: 'K', pieces: 25 },
+  { folder: 'puzzle5', letter: 'E', pieces: 36 },
 ];
 
 const isTouchDevice = () => {
@@ -168,7 +168,6 @@ const PuzzleGame = () => {
         <div className="end-message">
           🎉 All puzzles completed! <br />
           Total Time: <strong>{elapsedTime}s</strong> <br />
-          Final Word: <strong>{collectedLetters.join('')}</strong>
         </div>
       )}
     </div>
